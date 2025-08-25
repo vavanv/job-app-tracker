@@ -1,9 +1,11 @@
 import type { Context } from "@netlify/edge-functions";
-import { netlifyAppEngineHandler } from "../../server.ts";
 
 export default async function handler(request: Request, context: Context): Promise<Response> {
-  // Use the Netlify app engine handler from server.ts
-  return await netlifyAppEngineHandler(request);
+  // Import the server handler dynamically
+  const { reqHandler } = await import('../../dist/job-app-tracker/server/server.mjs');
+  
+  // Use the Angular SSR request handler
+  return await reqHandler(request);
 }
 
 export const config = {
