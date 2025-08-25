@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -487,38 +487,49 @@ export class SettingsComponent {
     }
   };
   
-  constructor(private snackBar: MatSnackBar) {
+  constructor(
+    private snackBar: MatSnackBar,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.loadSettings();
   }
   
   private loadSettings(): void {
-    // TODO: Load settings from IndexedDB
-    const savedSettings = localStorage.getItem('jobTrackerSettings');
-    if (savedSettings) {
-      try {
-        this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
-      } catch (error) {
-        console.error('Error loading settings:', error);
+    // Only access localStorage in browser environment
+    if (isPlatformBrowser(this.platformId)) {
+      // TODO: Load settings from IndexedDB
+      const savedSettings = localStorage.getItem('jobTrackerSettings');
+      if (savedSettings) {
+        try {
+          this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
+        } catch (error) {
+          console.error('Error loading settings:', error);
+        }
       }
     }
   }
   
   saveSettings(): void {
-    try {
-      // TODO: Save to IndexedDB instead of localStorage
-      localStorage.setItem('jobTrackerSettings', JSON.stringify(this.settings));
-      this.snackBar.open('Settings saved successfully!', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      });
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      this.snackBar.open('Error saving settings. Please try again.', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      });
+    // Only access localStorage in browser environment
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        // TODO: Save to IndexedDB instead of localStorage
+        localStorage.setItem('jobTrackerSettings', JSON.stringify(this.settings));
+        this.snackBar.open('Settings saved successfully!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      } catch (error) {
+        console.error('Error saving settings:', error);
+        this.snackBar.open('Error saving settings. Please try again.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      }
+    } else {
+      console.log('Settings save skipped during SSR');
     }
   }
   
@@ -592,28 +603,31 @@ export class SettingsComponent {
   
   clearAllData(): void {
     if (confirm('Are you sure you want to delete all data? This action cannot be undone.')) {
-      try {
-        // TODO: Clear IndexedDB data
-        localStorage.removeItem('jobTrackerSettings');
-        this.settings = {
-          profile: { fullName: '', email: '', phone: '', linkedin: '' },
-          preferences: { jobType: ['full-time'], minSalary: 0, maxSalary: 0, locations: ['remote'], skills: '' },
-          notifications: { email: true, followUpReminders: true, interviewReminders: true, weeklySummary: false, followUpDays: '7' },
-          display: { theme: 'light', itemsPerPage: '25', compactView: false, showSalary: true }
-        };
-        
-        this.snackBar.open('All data cleared successfully!', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom'
-        });
-      } catch (error) {
-        console.error('Error clearing data:', error);
-        this.snackBar.open('Error clearing data. Please try again.', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom'
-        });
+      // Only access localStorage in browser environment
+      if (isPlatformBrowser(this.platformId)) {
+        try {
+          // TODO: Clear IndexedDB data
+          localStorage.removeItem('jobTrackerSettings');
+          this.settings = {
+            profile: { fullName: '', email: '', phone: '', linkedin: '' },
+            preferences: { jobType: ['full-time'], minSalary: 0, maxSalary: 0, locations: ['remote'], skills: '' },
+            notifications: { email: true, followUpReminders: true, interviewReminders: true, weeklySummary: false, followUpDays: '7' },
+            display: { theme: 'light', itemsPerPage: '25', compactView: false, showSalary: true }
+          };
+          
+          this.snackBar.open('All data cleared successfully!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+        } catch (error) {
+          console.error('Error clearing data:', error);
+          this.snackBar.open('Error clearing data. Please try again.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+        }
       }
     }
   }

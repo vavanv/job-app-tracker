@@ -5,9 +5,8 @@
 [build.environment]
   NODE_VERSION = "20"
 
-[[edge_functions]]
-  function = "angular-ssr"
-  path = "/*"
+[edge_functions]
+  directory = "netlify/edge-functions"
 
 [functions]
   directory = "dist/job-app-tracker/server"
