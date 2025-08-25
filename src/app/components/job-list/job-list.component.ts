@@ -114,7 +114,7 @@ import { filter } from 'rxjs/operators';
   `,
   styles: [`
     .job-list-container {
-      padding: 8px;
+      padding: 4px;
       max-width: 1000px;
       margin: 0 auto;
     }
@@ -123,13 +123,13 @@ import { filter } from 'rxjs/operators';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .filters {
       display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 6px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
@@ -154,7 +154,7 @@ import { filter } from 'rxjs/operators';
     .job-cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 8px;
+      gap: 6px;
     }
     
     .job-card {
@@ -167,28 +167,28 @@ import { filter } from 'rxjs/operators';
     }
     
     .job-details {
-      margin: 8px 0;
+      margin: 6px 0;
     }
     
     .job-details p {
-      margin: 4px 0;
+      margin: 2px 0;
       color: #666;
       font-size: 14px;
     }
     
     .attachments-info {
-      margin: 6px 0;
+      margin: 4px 0;
     }
     
     .attachment-indicators {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       flex-wrap: wrap;
     }
     
     .attachment-chip {
       background-color: #f5f5f5;
-      height: 24px;
+      height: 22px;
       font-size: 11px;
       display: flex;
       align-items: center;
@@ -211,7 +211,7 @@ import { filter } from 'rxjs/operators';
     }
     
     mat-chip-set {
-      margin-top: 6px;
+      margin-top: 4px;
     }
     
     .status-applied {
@@ -236,8 +236,8 @@ import { filter } from 'rxjs/operators';
     
     mat-card-actions {
       display: flex;
-      gap: 4px;
-      padding: 8px 16px;
+      gap: 3px;
+      padding: 6px 12px;
     }
     
     mat-card-actions button {
@@ -249,26 +249,26 @@ import { filter } from 'rxjs/operators';
     
     .no-jobs {
       text-align: center;
-      padding: 24px 12px;
+      padding: 16px 8px;
       color: #666;
     }
     
     .large-icon {
-      font-size: 36px;
-      width: 36px;
-      height: 36px;
-      margin-bottom: 8px;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 6px;
       color: #ccc;
     }
     
     .no-jobs h2 {
-      margin: 8px 0;
+      margin: 6px 0;
       color: #333;
       font-size: 1.2rem;
     }
     
     .no-jobs p {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       font-size: 14px;
     }
     
@@ -280,21 +280,21 @@ import { filter } from 'rxjs/operators';
     
     @media (max-width: 768px) {
       .job-list-container {
-        padding: 6px;
+        padding: 4px;
       }
       
       .header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 6px;
+        margin-bottom: 6px;
       }
       
       .filters {
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
         width: 100%;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
       
       .search-field,
@@ -305,11 +305,11 @@ import { filter } from 'rxjs/operators';
       
       .job-cards {
         grid-template-columns: 1fr;
-        gap: 8px;
+        gap: 6px;
       }
       
       mat-card-actions {
-        padding: 6px 12px;
+        padding: 4px 8px;
       }
     }
   `]
