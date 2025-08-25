@@ -1,5 +1,6 @@
 import type { Context } from "@netlify/edge-functions";
 import { AngularAppEngine } from '@angular/ssr';
+import '@angular/compiler';
 
 const angularAppEngine = new AngularAppEngine();
 
