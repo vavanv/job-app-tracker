@@ -32,14 +32,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/job-detail/job-detail.component').then(
         (m) => m.JobDetailComponent
-      ),
+      )
   },
   {
     path: 'jobs/:id/edit',
     loadComponent: () =>
       import('./components/job-form/job-form.component').then(
         (m) => m.JobFormComponent
-      ),
+      )
   },
   {
     path: 'analytics',
