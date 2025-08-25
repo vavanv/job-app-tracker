@@ -5,16 +5,11 @@
 [build.environment]
   NODE_VERSION = "20"
 
-[[edge_functions]]
-  function = "angular-ssr"
-  path = "/*"
-
-
 [functions]
   directory = "dist/job-app-tracker/server"
 
 # Handle all routes with Angular SSR
 [[redirects]]
   from = "/*"
-  to = "/.netlify/edge-functions/angular-ssr"
+  to = "/.netlify/functions/server"
   status = 200
