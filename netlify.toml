@@ -9,8 +9,6 @@
   function = "angular-ssr"
   path = "/*"
 
-[edge_functions]
-  directory = "netlify/edge-functions"
 
 [functions]
   directory = "dist/job-app-tracker/server"
