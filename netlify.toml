@@ -3,7 +3,7 @@
   publish = "dist/job-app-tracker/browser"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [[edge_functions]]
   function = "angular-ssr"
