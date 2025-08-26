@@ -5,7 +5,7 @@
     </button>
     <h1>Job Application Details</h1>
     <div class="actions">
-      <button mat-button [routerLink]="['/job-form', job?.id]" [disabled]="!job">
+      <button mat-button [routerLink]="['/jobs', job?.id, 'edit']" [disabled]="!job">
         <mat-icon>edit</mat-icon>
         Edit
       </button>
