@@ -1,31 +1,28 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SimpleInputComponent } from '../simple-input/simple-input.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
     MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
     MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    SimpleInputComponent
   ],
   template: `
     <div class="settings-container">
@@ -41,33 +38,47 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Full Name</mat-label>
-                <input matInput [(ngModel)]="settings.profile.fullName" placeholder="Enter your full name">
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Email</mat-label>
-                <input matInput type="email" [(ngModel)]="settings.profile.email" placeholder="Enter your email">
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Phone</mat-label>
-                <input matInput [(ngModel)]="settings.profile.phone" placeholder="Enter your phone number">
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>LinkedIn Profile</mat-label>
-                <input matInput [(ngModel)]="settings.profile.linkedin" placeholder="https://linkedin.com/in/yourprofile">
-              </mat-form-field>
-            </div>
+            <form [formGroup]="settingsForm">
+              <div class="form-row">
+                <app-simple-input
+                  label="Full Name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  formControlName="fullName"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+              
+              <div class="form-row">
+                <app-simple-input
+                  label="Email"
+                  type="email"
+                  placeholder="Enter your email"
+                  formControlName="email"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+              
+              <div class="form-row">
+                <app-simple-input
+                  label="Phone"
+                  type="text"
+                  placeholder="Enter your phone number"
+                  formControlName="phone"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+              
+              <div class="form-row">
+                <app-simple-input
+                  label="LinkedIn Profile"
+                  type="text"
+                  placeholder="https://linkedin.com/in/yourprofile"
+                  formControlName="linkedin"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+            </form>
           </mat-card-content>
         </mat-card>
         
@@ -80,55 +91,55 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Preferred Job Type</mat-label>
-                <mat-select [(ngModel)]="settings.preferences.jobType" multiple>
-                  <mat-option value="full-time">Full-time</mat-option>
-                  <mat-option value="part-time">Part-time</mat-option>
-                  <mat-option value="contract">Contract</mat-option>
-                  <mat-option value="internship">Internship</mat-option>
-                  <mat-option value="freelance">Freelance</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Minimum Salary</mat-label>
-                <input matInput type="number" [(ngModel)]="settings.preferences.minSalary" placeholder="0">
-                <span matSuffix>USD</span>
-              </mat-form-field>
+            <form [formGroup]="settingsForm">
+              <div class="form-row">
+                <app-simple-input
+                  label="Preferred Job Type"
+                  type="select"
+                  formControlName="jobType"
+                  [options]="jobTypeOptions"
+                  class="full-width">
+                </app-simple-input>
+              </div>
               
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Maximum Salary</mat-label>
-                <input matInput type="number" [(ngModel)]="settings.preferences.maxSalary" placeholder="0">
-                <span matSuffix>USD</span>
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Preferred Locations</mat-label>
-                <mat-select [(ngModel)]="settings.preferences.locations" multiple>
-                  <mat-option value="remote">Remote</mat-option>
-                  <mat-option value="new-york">New York, NY</mat-option>
-                  <mat-option value="san-francisco">San Francisco, CA</mat-option>
-                  <mat-option value="seattle">Seattle, WA</mat-option>
-                  <mat-option value="austin">Austin, TX</mat-option>
-                  <mat-option value="chicago">Chicago, IL</mat-option>
-                  <mat-option value="boston">Boston, MA</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Skills/Technologies</mat-label>
-                <input matInput [(ngModel)]="settings.preferences.skills" 
-                       placeholder="Angular, React, Node.js, Python (comma-separated)">
-              </mat-form-field>
-            </div>
+              <div class="form-row">
+                <app-simple-input
+                  label="Minimum Salary (USD)"
+                  type="number"
+                  placeholder="0"
+                  formControlName="minSalary"
+                  class="half-width">
+                </app-simple-input>
+                
+                <app-simple-input
+                  label="Maximum Salary (USD)"
+                  type="number"
+                  placeholder="0"
+                  formControlName="maxSalary"
+                  class="half-width">
+                </app-simple-input>
+              </div>
+              
+              <div class="form-row">
+                <app-simple-input
+                  label="Preferred Locations"
+                  type="select"
+                  formControlName="locations"
+                  [options]="locationOptions"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+              
+              <div class="form-row">
+                <app-simple-input
+                  label="Skills/Technologies"
+                  type="text"
+                  placeholder="Angular, React, Node.js, Python (comma-separated)"
+                  formControlName="skills"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+            </form>
           </mat-card-content>
         </mat-card>
         
@@ -179,17 +190,17 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
               <mat-slide-toggle [(ngModel)]="settings.notifications.weeklySummary"></mat-slide-toggle>
             </div>
             
-            <div class="form-row" *ngIf="settings.notifications.followUpReminders">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Follow-up Reminder Days</mat-label>
-                <mat-select [(ngModel)]="settings.notifications.followUpDays">
-                  <mat-option value="3">3 days</mat-option>
-                  <mat-option value="7">1 week</mat-option>
-                  <mat-option value="14">2 weeks</mat-option>
-                  <mat-option value="30">1 month</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
+            <form [formGroup]="settingsForm">
+              <div class="form-row" *ngIf="settingsForm.get('followUpReminders')?.value">
+                <app-simple-input
+                  label="Follow-up Reminder Days"
+                  type="select"
+                  formControlName="followUpDays"
+                  [options]="followUpDaysOptions"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+            </form>
           </mat-card-content>
         </mat-card>
         
@@ -202,28 +213,27 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Theme</mat-label>
-                <mat-select [(ngModel)]="settings.display.theme">
-                  <mat-option value="light">Light</mat-option>
-                  <mat-option value="dark">Dark</mat-option>
-                  <mat-option value="auto">Auto (System)</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Items per Page</mat-label>
-                <mat-select [(ngModel)]="settings.display.itemsPerPage">
-                  <mat-option value="10">10</mat-option>
-                  <mat-option value="25">25</mat-option>
-                  <mat-option value="50">50</mat-option>
-                  <mat-option value="100">100</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
+            <form [formGroup]="settingsForm">
+              <div class="form-row">
+                <app-simple-input
+                  label="Theme"
+                  type="select"
+                  formControlName="theme"
+                  [options]="themeOptions"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+              
+              <div class="form-row">
+                <app-simple-input
+                  label="Items per Page"
+                  type="select"
+                  formControlName="itemsPerPage"
+                  [options]="itemsPerPageOptions"
+                  class="full-width">
+                </app-simple-input>
+              </div>
+            </form>
             
             <div class="toggle-row">
               <div class="toggle-info">
@@ -457,7 +467,50 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     }
   `]
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
+  settingsForm!: FormGroup;
+  
+  jobTypeOptions = [
+    { value: 'full-time', label: 'Full Time' },
+    { value: 'part-time', label: 'Part Time' },
+    { value: 'contract', label: 'Contract' },
+    { value: 'freelance', label: 'Freelance' },
+    { value: 'internship', label: 'Internship' }
+  ];
+  
+  locationOptions = [
+    { value: 'remote', label: 'Remote' },
+    { value: 'hybrid', label: 'Hybrid' },
+    { value: 'on-site', label: 'On-site' },
+    { value: 'new-york', label: 'New York' },
+    { value: 'san-francisco', label: 'San Francisco' },
+    { value: 'los-angeles', label: 'Los Angeles' },
+    { value: 'chicago', label: 'Chicago' },
+    { value: 'boston', label: 'Boston' },
+    { value: 'seattle', label: 'Seattle' },
+    { value: 'austin', label: 'Austin' }
+  ];
+  
+  followUpDaysOptions = [
+    { value: '3', label: '3 days' },
+    { value: '7', label: '1 week' },
+    { value: '14', label: '2 weeks' },
+    { value: '21', label: '3 weeks' },
+    { value: '30', label: '1 month' }
+  ];
+  
+  themeOptions = [
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'auto', label: 'Auto (System)' }
+  ];
+  
+  itemsPerPageOptions = [
+    { value: '10', label: '10' },
+    { value: '25', label: '25' },
+    { value: '50', label: '50' },
+    { value: '100', label: '100' }
+  ];
   settings = {
     profile: {
       fullName: '',
@@ -488,10 +541,34 @@ export class SettingsComponent {
   };
   
   constructor(
+    private fb: FormBuilder,
     private snackBar: MatSnackBar,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    this.initializeForm();
     this.loadSettings();
+  }
+  
+  ngOnInit(): void {
+    // Component initialization
+  }
+  
+  private initializeForm(): void {
+    this.settingsForm = this.fb.group({
+      fullName: [''],
+      email: [''],
+      phone: [''],
+      linkedin: [''],
+      jobType: ['full-time'],
+      minSalary: [0],
+      maxSalary: [0],
+      locations: ['remote'],
+      skills: [''],
+      followUpReminders: [true],
+      followUpDays: ['7'],
+      theme: ['light'],
+      itemsPerPage: ['25']
+    });
   }
   
   private loadSettings(): void {
@@ -502,6 +579,22 @@ export class SettingsComponent {
       if (savedSettings) {
         try {
           this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
+          // Update form with loaded settings
+        this.settingsForm.patchValue({
+          fullName: this.settings.profile.fullName,
+          email: this.settings.profile.email,
+          phone: this.settings.profile.phone,
+          linkedin: this.settings.profile.linkedin,
+          jobType: this.settings.preferences.jobType,
+          minSalary: this.settings.preferences.minSalary,
+          maxSalary: this.settings.preferences.maxSalary,
+          locations: this.settings.preferences.locations,
+          skills: this.settings.preferences.skills,
+          followUpReminders: this.settings.notifications.followUpReminders,
+          followUpDays: this.settings.notifications.followUpDays,
+          theme: this.settings.display.theme,
+          itemsPerPage: this.settings.display.itemsPerPage
+        });
         } catch (error) {
           console.error('Error loading settings:', error);
         }
@@ -510,27 +603,40 @@ export class SettingsComponent {
   }
   
   saveSettings(): void {
-    // Only access localStorage in browser environment
-    if (isPlatformBrowser(this.platformId)) {
-      try {
-        // TODO: Save to IndexedDB instead of localStorage
+    try {
+      // Update settings object with form values
+      const formValues = this.settingsForm.value;
+      this.settings.profile.fullName = formValues.fullName;
+      this.settings.profile.email = formValues.email;
+      this.settings.profile.phone = formValues.phone;
+      this.settings.profile.linkedin = formValues.linkedin;
+      this.settings.preferences.jobType = formValues.jobType;
+      this.settings.preferences.minSalary = formValues.minSalary;
+      this.settings.preferences.maxSalary = formValues.maxSalary;
+      this.settings.preferences.locations = formValues.locations;
+      this.settings.preferences.skills = formValues.skills;
+      this.settings.notifications.followUpReminders = formValues.followUpReminders;
+      this.settings.notifications.followUpDays = formValues.followUpDays;
+      this.settings.display.theme = formValues.theme;
+      this.settings.display.itemsPerPage = formValues.itemsPerPage;
+      
+      // Only access localStorage in browser environment
+      if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem('jobTrackerSettings', JSON.stringify(this.settings));
         this.snackBar.open('Settings saved successfully!', 'Close', {
           duration: 3000,
           horizontalPosition: 'center',
-          verticalPosition: 'bottom'
-        });
-      } catch (error) {
-        console.error('Error saving settings:', error);
-        this.snackBar.open('Error saving settings. Please try again.', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom'
+          verticalPosition: 'top'
         });
       }
-    } else {
-      console.log('Settings save skipped during SSR');
-    }
+    } catch (error) {
+       console.error('Error saving settings:', error);
+       this.snackBar.open('Error saving settings. Please try again.', 'Close', {
+         duration: 3000,
+         horizontalPosition: 'center',
+         verticalPosition: 'top'
+       });
+     }
   }
   
   exportData(): void {

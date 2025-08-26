@@ -5,8 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { IndexedDBService, JobApplication, FileAttachment } from '../../services/indexeddb.service';
+import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-job-detail',
@@ -18,6 +20,7 @@ import { IndexedDBService, JobApplication, FileAttachment } from '../../services
     MatIconModule,
     MatChipsModule,
     MatDividerModule,
+    MatDialogModule,
     RouterModule
   ],
   template: `
@@ -436,7 +439,8 @@ export class JobDetailComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private dbService: IndexedDBService
+    private dbService: IndexedDBService,
+    private dialog: MatDialog
   ) {}
   
   ngOnInit(): void {
@@ -461,13 +465,27 @@ export class JobDetailComponent implements OnInit {
   }
   
   async deleteJob(): Promise<void> {
-    if (!this.jobId || !confirm('Are you sure you want to delete this job application?')) return;
+    if (!this.jobId || !this.job) return;
     
-    try {
-      await this.dbService.deleteJob(this.jobId);
-      this.router.navigate(['/jobs']);
-    } catch (error) {
-      console.error('Error deleting job:', error);
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Job Application',
+        message: `Are you sure you want to delete the application for "${this.job.position}" at "${this.job.company}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    const result = await dialogRef.afterClosed().toPromise();
+    if (result) {
+      try {
+        await this.dbService.deleteJob(this.jobId);
+        this.router.navigate(['/jobs']);
+      } catch (error) {
+        console.error('Error deleting job:', error);
+        alert('Error deleting job application. Please try again.');
+      }
     }
   }
   
