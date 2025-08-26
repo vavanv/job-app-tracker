@@ -452,9 +452,10 @@ export class JobFormComponent {
   
   async onSubmit(): Promise<void> {
     if (this.jobForm.valid) {
+      const dateApplied = this.jobForm.value.dateApplied;
       const jobData = {
         ...this.jobForm.value,
-        dateApplied: this.jobForm.value.dateApplied.toISOString()
+        dateApplied: dateApplied instanceof Date ? dateApplied.toISOString() : new Date(dateApplied).toISOString()
       };
       
       // Handle file uploads

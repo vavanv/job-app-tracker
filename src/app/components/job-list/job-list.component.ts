@@ -1,19 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { RouterModule } from '@angular/router';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { SimpleInputComponent } from '../simple-input/simple-input.component';
 import { IndexedDBService, JobApplication } from '../../services/indexeddb.service';
-import { OnInit, OnDestroy } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-job-list',
@@ -25,10 +22,8 @@ import { filter } from 'rxjs/operators';
     MatIconModule,
     MatChipsModule,
     RouterModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatFormFieldModule,
-    MatInputModule
+    SimpleInputComponent,
+    ReactiveFormsModule
   ],
   template: `
     <div class="job-list-container">
@@ -41,22 +36,31 @@ import { filter } from 'rxjs/operators';
       </div>
       
       <div class="filters">
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Search jobs...</mat-label>
-          <input matInput placeholder="Search by position or company" [value]="searchTerm" (input)="onSearchChange($event)">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-        
-        <mat-form-field appearance="outline">
-          <mat-label>Filter by Status</mat-label>
-          <mat-select [value]="statusFilter" (selectionChange)="onStatusFilterChange($event.value)">
-            <mat-option value="All">All</mat-option>
-            <mat-option value="Applied">Applied</mat-option>
-            <mat-option value="Interview">Interview</mat-option>
-            <mat-option value="Offer">Offer</mat-option>
-            <mat-option value="Rejected">Rejected</mat-option>
-          </mat-select>
-        </mat-form-field>
+        <form [formGroup]="filterForm">
+          <div class="filter-row">
+            <app-simple-input
+              label="Search jobs..."
+              placeholder="Search by position or company"
+              formControlName="searchTerm"
+              class="search-field">
+            </app-simple-input>
+            
+            <app-simple-input
+              label="Filter by Status"
+              placeholder="Select status"
+              type="select"
+              formControlName="statusFilter"
+              [options]="[
+                {value: 'All', label: 'All'},
+                {value: 'Applied', label: 'Applied'},
+                {value: 'Interview', label: 'Interview'},
+                {value: 'Offer', label: 'Offer'},
+                {value: 'Rejected', label: 'Rejected'}
+              ]"
+              class="status-filter">
+            </app-simple-input>
+          </div>
+        </form>
       </div>
       
       <div class="job-cards" *ngIf="filteredJobs.length > 0; else noJobs">
@@ -127,15 +131,22 @@ import { filter } from 'rxjs/operators';
     }
 
     .filters {
+      margin-bottom: 8px;
+    }
+
+    .filter-row {
       display: flex;
       gap: 6px;
-      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
     .search-field {
       flex: 1;
       min-width: 200px;
+    }
+
+    .status-filter {
+      min-width: 150px;
     }
     
     .header h1 {
@@ -290,11 +301,10 @@ import { filter } from 'rxjs/operators';
         margin-bottom: 6px;
       }
       
-      .filters {
+      .filter-row {
         flex-direction: column;
         gap: 4px;
         width: 100%;
-        margin-bottom: 6px;
       }
       
       .search-field,
@@ -317,17 +327,27 @@ import { filter } from 'rxjs/operators';
 export class JobListComponent implements OnInit, OnDestroy {
   jobs: JobApplication[] = [];
   filteredJobs: JobApplication[] = [];
-  searchTerm = '';
-  statusFilter = 'All';
+  filterForm: FormGroup;
   private navigationSubscription: Subscription = new Subscription();
   
   constructor(
     private dbService: IndexedDBService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private fb: FormBuilder
+  ) {
+    this.filterForm = this.fb.group({
+      searchTerm: [''],
+      statusFilter: ['All']
+    });
+  }
   
   ngOnInit() {
     this.loadJobs();
+    
+    // Subscribe to form changes
+    this.filterForm.valueChanges.subscribe(() => {
+      this.filterJobs();
+    });
     
     // Subscribe to navigation events to refresh data when returning to this route
     this.navigationSubscription = this.router.events
@@ -353,22 +373,15 @@ export class JobListComponent implements OnInit, OnDestroy {
   }
   
   filterJobs(): void {
+    const { searchTerm, statusFilter } = this.filterForm.value;
+    
     this.filteredJobs = this.jobs.filter(job => {
-      const matchesSearch = job.position.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           job.company.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesStatus = this.statusFilter === 'All' || job.status === this.statusFilter;
+      const matchesSearch = !searchTerm || 
+        job.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'All' || job.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }
-  
-  onSearchChange(event: any): void {
-    this.searchTerm = event.target.value;
-    this.filterJobs();
-  }
-  
-  onStatusFilterChange(status: string): void {
-    this.statusFilter = status;
-    this.filterJobs();
   }
   
   async deleteJob(jobId: string): Promise<void> {
