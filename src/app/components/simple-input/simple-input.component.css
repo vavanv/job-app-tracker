@@ -36,7 +36,7 @@ textarea.simple-input {
  
  textarea.simple-input:focus {
    border-bottom-width: 2px;
-   border-bottom-color: #1976d2;
+   border-bottom-color: #87ceeb;
  }
  
  textarea.simple-input.error {
@@ -58,7 +58,7 @@ textarea.simple-input {
   
   select.simple-input:focus {
     border-bottom-width: 2px;
-    border-bottom-color: #1976d2;
+    border-bottom-color: #87ceeb;
   }
   
   select.simple-input.error {

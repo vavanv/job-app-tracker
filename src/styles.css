@@ -1,5 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+/* Override Material theme colors to light blue */
+:root {
+  --mdc-theme-primary: #87ceeb;
+  --mdc-theme-secondary: #87ceeb;
+  --mat-toolbar-container-background-color: #87ceeb;
+  --mat-app-background-color: #f8f9fa;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: #87ceeb;
+}
+
+.mat-mdc-button.mat-primary {
+  --mdc-text-button-label-text-color: #87ceeb;
+}
+
+.mat-mdc-outlined-button.mat-primary {
+  --mdc-outlined-button-outline-color: #87ceeb;
+  --mdc-outlined-button-label-text-color: #87ceeb;
+}
 /* Material Icons font face declaration */
 @font-face {
   font-family: 'Material Icons';

@@ -78,7 +78,7 @@
 
 .status-applied {
   background-color: #e3f2fd;
-  color: #1976d2;
+  color: #87ceeb;
 }
 
 .status-interview {
@@ -180,7 +180,7 @@
 }
 
 .attachment-item button {
-  color: #1976d2;
+  color: #87ceeb;
 }
 
 .attachment-item button:hover {
