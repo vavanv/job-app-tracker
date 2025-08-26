@@ -1,0 +1,184 @@
+<div class="analytics-container">
+  <h1>Analytics Dashboard</h1>
+
+  <div class="stats-overview">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Total Applications</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ analytics.totalApplications }}</div>
+        <div
+          class="stat-change positive"
+          *ngIf="analytics.totalApplications > 0"
+        >
+          <mat-icon>trending_up</mat-icon>
+          +{{ analytics.thisMonthApplications }} this month
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Response Rate</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ analytics.responseRate }}%</div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="analytics.responseRate"
+        ></mat-progress-bar>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Interview Rate</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ analytics.interviewRate }}%</div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="analytics.interviewRate"
+        ></mat-progress-bar>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Offer Rate</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ analytics.offerRate }}%</div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="analytics.offerRate"
+        ></mat-progress-bar>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="charts-section">
+    <div class="chart-row">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Application Status Breakdown</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="status-breakdown">
+            <div
+              class="status-item"
+              *ngFor="let status of analytics.statusBreakdown"
+            >
+              <div class="status-info">
+                <mat-chip [class]="'status-' + status.name.toLowerCase()">{{ status.name }}</mat-chip>
+                <span class="status-count">{{ status.count }}</span>
+              </div>
+              <div class="status-bar">
+                <div
+                  class="status-progress"
+                  [style.width.%]="status.percentage"
+                  [class]="'status-' + status.name.toLowerCase()"
+                ></div>
+              </div>
+              <span class="status-percentage">{{ status.percentage }}%</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Applications Over Time</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="timeline-chart">
+            <div
+              class="timeline-item"
+              *ngFor="let month of analytics.monthlyData"
+            >
+              <div class="month-label">{{ month.month }}</div>
+              <div class="month-bar">
+                <div
+                  class="month-progress"
+                  [style.height.px]="month.count * 10"
+                ></div>
+              </div>
+              <div class="month-count">{{ month.count }}</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="chart-row">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Top Companies</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="company-list">
+            <div
+              class="company-item"
+              *ngFor="let company of analytics.topCompanies"
+            >
+              <div class="company-info">
+                <strong>{{ company.name }}</strong>
+                <span class="company-count">{{ company.count }} applications</span>
+              </div>
+              <div class="company-bar">
+                <div
+                  class="company-progress"
+                  [style.width.%]="company.percentage"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Job Types</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="job-types">
+            <div
+              class="job-type-item"
+              *ngFor="let type of analytics.jobTypes"
+            >
+              <mat-icon>work</mat-icon>
+              <div class="job-type-info">
+                <strong>{{ type.name }}</strong>
+                <span>{{ type.count }} applications</span>
+              </div>
+              <span class="job-type-percentage">{{ type.percentage }}%</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <mat-card class="insights-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>lightbulb</mat-icon>
+        Insights & Recommendations
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="insights-list">
+        <div
+          class="insight-item"
+          *ngFor="let insight of analytics.insights"
+        >
+          <mat-icon [class]="insight.type">{{ insight.icon }}</mat-icon>
+          <div class="insight-content">
+            <strong>{{ insight.title }}</strong>
+            <p>{{ insight.description }}</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,155 @@
+<div class="job-detail-container" *ngIf="job; else notFound">
+  <div class="header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Job Application Details</h1>
+    <div class="actions">
+      <button mat-button [routerLink]="['/job-form', job?.id]" [disabled]="!job">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+      <button mat-button color="warn" (click)="deleteJob()" [disabled]="!job">
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    </div>
+  </div>
+  
+  <mat-card class="job-card">
+    <mat-card-header>
+      <mat-card-title>{{ job.position }}</mat-card-title>
+      <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="job-info">
+        <div class="info-section">
+          <h3>Basic Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <mat-icon>location_on</mat-icon>
+              <div>
+                <strong>Location</strong>
+                <p>{{ job.location || 'Not specified' }}</p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <mat-icon>calendar_today</mat-icon>
+              <div>
+                <strong>Date Applied</strong>
+                <p>{{ job.dateApplied | date:'fullDate' }}</p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <mat-icon>work</mat-icon>
+              <div>
+                <strong>Job Type</strong>
+                <p>{{ job.jobType || 'Not specified' }}</p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <mat-icon>attach_money</mat-icon>
+              <div>
+                <strong>Salary Range</strong>
+                <p>{{ job.salaryRange || 'Not specified' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="info-section">
+          <h3>Application Status</h3>
+          <mat-chip-set>
+            <mat-chip [class]="'status-' + job.status.toLowerCase()">{{ job.status }}</mat-chip>
+          </mat-chip-set>
+        </div>
+        
+        <mat-divider *ngIf="job.url"></mat-divider>
+        
+        <div class="info-section" *ngIf="job.url">
+          <h3>Job Posting</h3>
+          <a [href]="job.url" target="_blank" mat-button color="primary">
+            <mat-icon>open_in_new</mat-icon>
+            View Original Posting
+          </a>
+        </div>
+        
+        <mat-divider *ngIf="job.notes"></mat-divider>
+        
+        <div class="info-section" *ngIf="job.notes">
+          <h3>Notes</h3>
+          <p class="notes">{{ job.notes }}</p>
+        </div>
+        
+        <mat-divider *ngIf="job.resume || job.coverLetter"></mat-divider>
+        
+        <div class="info-section" *ngIf="job.resume || job.coverLetter">
+          <h3>Attachments</h3>
+          <div class="attachments">
+            <div class="attachment-item" *ngIf="job.resume">
+              <mat-icon>description</mat-icon>
+              <div class="attachment-info">
+                <strong>Resume</strong>
+                <p>{{ job.resume.name }} ({{ formatFileSize(job.resume.size) }})</p>
+              </div>
+              <button mat-icon-button (click)="downloadFile(job.resume, 'resume')" title="Download Resume">
+                <mat-icon>download</mat-icon>
+              </button>
+            </div>
+            
+            <div class="attachment-item" *ngIf="job.coverLetter">
+              <mat-icon>article</mat-icon>
+              <div class="attachment-info">
+                <strong>Cover Letter</strong>
+                <p>{{ job.coverLetter.name }} ({{ formatFileSize(job.coverLetter.size) }})</p>
+              </div>
+              <button mat-icon-button (click)="downloadFile(job.coverLetter, 'cover-letter')" title="Download Cover Letter">
+                <mat-icon>download</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="info-section">
+          <h3>Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <mat-icon>add_circle</mat-icon>
+              <div>
+                <strong>Application Created</strong>
+                <p>{{ job.createdAt | date:'medium' }}</p>
+              </div>
+            </div>
+            <div class="timeline-item" *ngIf="job.updatedAt && job.updatedAt !== job.createdAt">
+              <mat-icon>update</mat-icon>
+              <div>
+                <strong>Last Updated</strong>
+                <p>{{ job.updatedAt | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #notFound>
+  <div class="not-found">
+    <mat-icon class="large-icon">error_outline</mat-icon>
+    <h2>Job Application Not Found</h2>
+    <p>The job application you're looking for doesn't exist or has been deleted.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back
+    </button>
+  </div>
+</ng-template>

@@ -1,0 +1,125 @@
+.simple-input-container {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.simple-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.simple-input {
+  width: 100%;
+  padding: 8px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+
+textarea.simple-input {
+   min-height: 80px;
+   resize: vertical;
+   border: none;
+   border-bottom: 1px solid #ddd;
+   border-radius: 0;
+   background: transparent;
+ }
+ 
+ textarea.simple-input:focus {
+   border-bottom-width: 2px;
+   border-bottom-color: #1976d2;
+ }
+ 
+ textarea.simple-input.error {
+    border-bottom-color: #f44336;
+  }
+  
+  select.simple-input {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    background: transparent;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 24px;
+  }
+  
+  select.simple-input:focus {
+    border-bottom-width: 2px;
+    border-bottom-color: #1976d2;
+  }
+  
+  select.simple-input.error {
+    border-bottom-color: #f44336;
+  }
+
+.simple-input:focus {
+  border-bottom-color: #2196f3;
+}
+
+.simple-input:hover:not(:disabled) {
+  border-bottom-color: #999;
+}
+
+.simple-input:disabled {
+  color: #999;
+  border-bottom-color: #eee;
+  cursor: not-allowed;
+}
+
+.simple-input.error {
+  border-bottom-color: #f44336;
+}
+
+.simple-input::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+.error-message {
+  font-size: 12px;
+  color: #f44336;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+/* Focus animation */
+.simple-input {
+  position: relative;
+}
+
+.simple-input-container {
+  position: relative;
+}
+
+.simple-input-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #2196f3;
+  transition: width 0.3s ease;
+}
+
+.simple-input:focus ~ ::after,
+.simple-input.focused ~ ::after {
+  width: 100%;
+}
+
+.simple-input:focus {
+  border-bottom-width: 2px;
+}

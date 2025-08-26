@@ -1,0 +1,141 @@
+.job-form-container {
+  padding: 4px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+mat-card {
+  padding: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: calc(50% - 4px);
+}
+
+mat-card-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #e0e0e0;
+}
+
+mat-card-actions button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-upload-section {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.file-upload-section h3 {
+  margin: 0 0 6px 0;
+  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.file-upload-field {
+  margin-bottom: 6px;
+  padding: 6px;
+  border: 1px dashed #ddd;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #666;
+  font-size: 13px;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 4px 8px;
+  background-color: #e8f5e8;
+  border-radius: 3px;
+  color: #2e7d32;
+  font-size: 12px;
+}
+
+.file-info mat-icon {
+  color: #4caf50;
+}
+
+.existing-file-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  color: #1565c0;
+}
+
+.existing-file-info mat-icon {
+  color: #1976d2;
+}
+
+@media (max-width: 768px) {
+  .job-form-container {
+    padding: 4px;
+  }
+  
+  mat-card {
+    padding: 6px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  
+  .half-width {
+    width: 100%;
+  }
+  
+  mat-card-actions {
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  
+  mat-card-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

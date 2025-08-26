@@ -20,38 +20,8 @@ export interface ConfirmDeleteDialogData {
     MatButtonModule,
     MatIconModule
   ],
-  template: `
-    <h2 mat-dialog-title>
-      <mat-icon color="warn">warning</mat-icon>
-      {{ data.title }}
-    </h2>
-    <mat-dialog-content>
-      <p>{{ data.message }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">{{ data.cancelText }}</button>
-      <button mat-raised-button color="warn" (click)="onConfirm()">
-        <mat-icon>delete</mat-icon>
-        {{ data.confirmText }}
-      </button>
-    </mat-dialog-actions>
-  `,
-  styles: [`
-    h2 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-    }
-    
-    mat-dialog-content {
-      margin: 16px 0;
-    }
-    
-    mat-dialog-actions {
-      gap: 8px;
-    }
-  `]
+  templateUrl: './confirm-delete-dialog.component.html',
+  styleUrls: ['./confirm-delete-dialog.component.css']
 })
 export class ConfirmDeleteDialogComponent {
   constructor(
