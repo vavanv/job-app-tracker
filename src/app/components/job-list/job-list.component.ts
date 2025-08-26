@@ -8,8 +8,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { SimpleInputComponent } from '../simple-input/simple-input.component';
+import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { IndexedDBService, JobApplication } from '../../services/indexeddb.service';
 
 @Component({
@@ -21,6 +23,7 @@ import { IndexedDBService, JobApplication } from '../../services/indexeddb.servi
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatDialogModule,
     RouterModule,
     SimpleInputComponent,
     ReactiveFormsModule
@@ -98,6 +101,10 @@ import { IndexedDBService, JobApplication } from '../../services/indexeddb.servi
             <button mat-button [routerLink]="['/jobs', job.id, 'edit']">
               <mat-icon>edit</mat-icon>
               Edit
+            </button>
+            <button mat-button color="warn" (click)="deleteJob(job)">
+              <mat-icon>delete</mat-icon>
+              Delete
             </button>
           </mat-card-actions>
         </mat-card>
@@ -331,9 +338,10 @@ export class JobListComponent implements OnInit, OnDestroy {
   private navigationSubscription: Subscription = new Subscription();
   
   constructor(
-    private dbService: IndexedDBService,
     private router: Router,
-    private fb: FormBuilder
+    private dbService: IndexedDBService,
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) {
     this.filterForm = this.fb.group({
       searchTerm: [''],
@@ -384,12 +392,26 @@ export class JobListComponent implements OnInit, OnDestroy {
     });
   }
   
-  async deleteJob(jobId: string): Promise<void> {
-    try {
-      await this.dbService.deleteJob(jobId);
-      await this.loadJobs();
-    } catch (error) {
-      console.error('Error deleting job:', error);
+  async deleteJob(job: JobApplication): Promise<void> {
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Job Application',
+        message: `Are you sure you want to delete the application for "${job.position}" at "${job.company}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    const result = await dialogRef.afterClosed().toPromise();
+    if (result) {
+      try {
+        await this.dbService.deleteJob(job.id!.toString());
+        await this.loadJobs(); // Refresh the job list
+      } catch (error) {
+        console.error('Error deleting job:', error);
+        alert('Error deleting job application. Please try again.');
+      }
     }
   }
 
