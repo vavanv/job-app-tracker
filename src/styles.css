@@ -64,6 +64,26 @@ mat-icon {
   -webkit-font-smoothing: antialiased !important;
 }
 
+/* Smaller icons for buttons to prevent cutoff */
+button mat-icon,
+.mat-mdc-button mat-icon,
+.mat-mdc-raised-button mat-icon,
+.mat-mdc-outlined-button mat-icon,
+.mat-mdc-fab mat-icon,
+.mat-mdc-mini-fab mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Even smaller icons for small buttons */
+.mat-mdc-button.mat-mdc-button-small mat-icon,
+.action-btn mat-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
 * {
   box-sizing: border-box;
 }

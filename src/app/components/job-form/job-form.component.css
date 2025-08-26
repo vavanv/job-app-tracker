@@ -24,17 +24,64 @@ mat-card {
 
 mat-card-actions {
   display: flex;
-  gap: 6px;
+  gap: 12px;
   justify-content: flex-end;
-  margin-top: 8px;
-  padding-top: 6px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid #e0e0e0;
 }
 
 mat-card-actions button {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background-color: #eeeeee;
+  border-color: #d0d0d0;
+  color: #555;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.save-button {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.3);
+}
+
+.save-button:hover:not([disabled]) {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+}
+
+.save-button:disabled {
+  background: #e0e0e0;
+  color: #999;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.save-button mat-icon,
+.cancel-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .file-upload-section {
@@ -130,12 +177,20 @@ mat-card-actions button {
   
   mat-card-actions {
     flex-direction: column;
-    gap: 4px;
-    margin-top: 6px;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
   }
   
   mat-card-actions button {
     width: 100%;
     justify-content: center;
+    padding: 14px 20px;
+    min-width: unset;
+  }
+  
+  .cancel-button,
+  .save-button {
+    font-size: 14px;
   }
 }

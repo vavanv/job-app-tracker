@@ -8,6 +8,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SimpleInputComponent } from '../simple-input/simple-input.component';
+import { IndexedDBService } from '../../services/indexeddb.service';
 
 @Component({
   selector: 'app-settings',
@@ -103,13 +104,14 @@ export class SettingsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private dbService: IndexedDBService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.initializeForm();
     this.loadSettings();
   }
   
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Component initialization
   }
   
@@ -131,38 +133,28 @@ export class SettingsComponent implements OnInit {
     });
   }
   
-  private loadSettings(): void {
-    // Only access localStorage in browser environment
-    if (isPlatformBrowser(this.platformId)) {
-      // TODO: Load settings from IndexedDB
-      const savedSettings = localStorage.getItem('jobTrackerSettings');
-      if (savedSettings) {
-        try {
-          this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
-          // Update form with loaded settings
-        this.settingsForm.patchValue({
-          fullName: this.settings.profile.fullName,
-          email: this.settings.profile.email,
-          phone: this.settings.profile.phone,
-          linkedin: this.settings.profile.linkedin,
-          jobType: this.settings.preferences.jobType,
-          minSalary: this.settings.preferences.minSalary,
-          maxSalary: this.settings.preferences.maxSalary,
-          locations: this.settings.preferences.locations,
-          skills: this.settings.preferences.skills,
-          followUpReminders: this.settings.notifications.followUpReminders,
-          followUpDays: this.settings.notifications.followUpDays,
-          theme: this.settings.display.theme,
-          itemsPerPage: this.settings.display.itemsPerPage
-        });
-        } catch (error) {
-          console.error('Error loading settings:', error);
+  private async loadSettings(): Promise<void> {
+    try {
+      // Load settings from IndexedDB
+      await this.loadSettingsFromDB();
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      // Fallback to localStorage if IndexedDB fails
+      if (isPlatformBrowser(this.platformId)) {
+        const savedSettings = localStorage.getItem('jobTrackerSettings');
+        if (savedSettings) {
+          try {
+            this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
+            this.updateFormWithSettings();
+          } catch (error) {
+            console.error('Error loading settings from localStorage:', error);
+          }
         }
       }
     }
   }
   
-  saveSettings(): void {
+  async saveSettings(): Promise<void> {
     try {
       // Update settings object with form values
       const formValues = this.settingsForm.value;
@@ -180,15 +172,19 @@ export class SettingsComponent implements OnInit {
       this.settings.display.theme = formValues.theme;
       this.settings.display.itemsPerPage = formValues.itemsPerPage;
       
-      // Only access localStorage in browser environment
+      // Save to IndexedDB
+      await this.dbService.saveSettings(this.settings);
+      
+      // Also save to localStorage as backup
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem('jobTrackerSettings', JSON.stringify(this.settings));
-        this.snackBar.open('Settings saved successfully!', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
       }
+      
+      this.snackBar.open('Settings saved successfully!', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
     } catch (error) {
        console.error('Error saving settings:', error);
        this.snackBar.open('Error saving settings. Please try again.', 'Close', {
@@ -199,16 +195,16 @@ export class SettingsComponent implements OnInit {
      }
   }
   
-  exportData(): void {
+  async exportData(): Promise<void> {
     try {
-      // TODO: Export data from IndexedDB
-      const data = {
-        settings: this.settings,
-        jobs: [], // TODO: Get jobs from IndexedDB
-        exportDate: new Date().toISOString()
-      };
+      // Export all data from IndexedDB
+      const exportData = await this.dbService.exportAllData();
       
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      if (!exportData) {
+        throw new Error('Failed to export data from database');
+      }
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -216,8 +212,8 @@ export class SettingsComponent implements OnInit {
       link.click();
       window.URL.revokeObjectURL(url);
       
-      this.snackBar.open('Data exported successfully!', 'Close', {
-        duration: 3000,
+      this.snackBar.open(`Data exported successfully! (${exportData.jobs?.length || 0} jobs, settings included)`, 'Close', {
+        duration: 4000,
         horizontalPosition: 'center',
         verticalPosition: 'bottom'
       });
@@ -239,26 +235,56 @@ export class SettingsComponent implements OnInit {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (e: any) => {
+        reader.onload = async (e: any) => {
           try {
             const data = JSON.parse(e.target.result);
-            // TODO: Import data to IndexedDB
-            if (data.settings) {
-              this.settings = { ...this.settings, ...data.settings };
-              this.saveSettings();
+            
+            // Validate imported data structure
+            if (!this.validateImportData(data)) {
+              throw new Error('Invalid data format. Please check the file structure.');
             }
-            this.snackBar.open('Data imported successfully!', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom'
-            });
+            
+            let importedJobsCount = 0;
+            let importedSettingsCount = 0;
+            
+            // Import jobs if present
+            if (data.jobs && Array.isArray(data.jobs)) {
+              for (const job of data.jobs) {
+                // Remove id to avoid conflicts and let IndexedDB assign new ones
+                const { id, ...jobData } = job;
+                await this.dbService.addJob(jobData);
+                importedJobsCount++;
+              }
+            }
+            
+            // Import settings if present
+            if (data.settings) {
+              await this.dbService.saveSettings(data.settings);
+              importedSettingsCount = 1;
+              // Reload settings in the form
+              await this.loadSettingsFromDB();
+            }
+            
+            this.snackBar.open(
+              `Data imported successfully! (${importedJobsCount} jobs, ${importedSettingsCount > 0 ? 'settings included' : 'no settings'})`,
+              'Close',
+              {
+                duration: 4000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom'
+              }
+            );
           } catch (error) {
             console.error('Error importing data:', error);
-            this.snackBar.open('Error importing data. Please check the file format.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom'
-            });
+            this.snackBar.open(
+              error instanceof Error ? error.message : 'Error importing data. Please check the file format.',
+              'Close',
+              {
+                duration: 4000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom'
+              }
+            );
           }
         };
         reader.readAsText(file);
@@ -267,34 +293,103 @@ export class SettingsComponent implements OnInit {
     input.click();
   }
   
-  clearAllData(): void {
+  async clearAllData(): Promise<void> {
     if (confirm('Are you sure you want to delete all data? This action cannot be undone.')) {
-      // Only access localStorage in browser environment
-      if (isPlatformBrowser(this.platformId)) {
-        try {
-          // TODO: Clear IndexedDB data
+      try {
+        // Clear all jobs from IndexedDB
+        const allJobs = await this.dbService.getAllJobs();
+        for (const job of allJobs) {
+          if (job.id) {
+            await this.dbService.deleteJob(job.id.toString());
+          }
+        }
+        
+        // Clear settings from IndexedDB and localStorage
+        if (isPlatformBrowser(this.platformId)) {
           localStorage.removeItem('jobTrackerSettings');
-          this.settings = {
-            profile: { fullName: '', email: '', phone: '', linkedin: '' },
-            preferences: { jobType: ['full-time'], minSalary: 0, maxSalary: 0, locations: ['remote'], skills: '' },
-            notifications: { email: true, followUpReminders: true, interviewReminders: true, weeklySummary: false, followUpDays: '7' },
-            display: { theme: 'light', itemsPerPage: '25', compactView: false, showSalary: true }
-          };
-          
-          this.snackBar.open('All data cleared successfully!', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
-        } catch (error) {
-          console.error('Error clearing data:', error);
-          this.snackBar.open('Error clearing data. Please try again.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
+        }
+        
+        // Reset settings to default
+        this.settings = {
+          profile: { fullName: '', email: '', phone: '', linkedin: '' },
+          preferences: { jobType: ['full-time'], minSalary: 0, maxSalary: 0, locations: ['remote'], skills: '' },
+          notifications: { email: true, followUpReminders: true, interviewReminders: true, weeklySummary: false, followUpDays: '7' },
+          display: { theme: 'light', itemsPerPage: '25', compactView: false, showSalary: true }
+        };
+        
+        // Reset form
+        this.settingsForm.reset();
+        this.initializeForm();
+        
+        this.snackBar.open(`All data cleared successfully! (${allJobs.length} jobs deleted)`, 'Close', {
+          duration: 4000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      } catch (error) {
+        console.error('Error clearing data:', error);
+        this.snackBar.open('Error clearing data. Please try again.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      }
+    }
+  }
+  
+  private validateImportData(data: any): boolean {
+    // Check if data has the expected structure
+    if (!data || typeof data !== 'object') {
+      return false;
+    }
+    
+    // Check if it has either jobs or settings
+    const hasJobs = data.jobs && Array.isArray(data.jobs);
+    const hasSettings = data.settings && typeof data.settings === 'object';
+    
+    if (!hasJobs && !hasSettings) {
+      return false;
+    }
+    
+    // Validate jobs structure if present
+    if (hasJobs) {
+      for (const job of data.jobs) {
+        if (!job.company || !job.position || !job.status || !job.dateApplied) {
+          return false;
         }
       }
     }
+    
+    return true;
+  }
+  
+  private async loadSettingsFromDB(): Promise<void> {
+    try {
+      const dbSettings = await this.dbService.getSettings();
+      if (dbSettings) {
+        this.settings = { ...this.settings, ...dbSettings };
+        this.updateFormWithSettings();
+      }
+    } catch (error) {
+      console.error('Error loading settings from DB:', error);
+    }
+  }
+
+  private updateFormWithSettings(): void {
+    this.settingsForm.patchValue({
+      fullName: this.settings.profile.fullName,
+      email: this.settings.profile.email,
+      phone: this.settings.profile.phone,
+      linkedin: this.settings.profile.linkedin,
+      jobType: this.settings.preferences.jobType,
+      minSalary: this.settings.preferences.minSalary,
+      maxSalary: this.settings.preferences.maxSalary,
+      locations: this.settings.preferences.locations,
+      skills: this.settings.preferences.skills,
+      followUpReminders: this.settings.notifications.followUpReminders,
+      followUpDays: this.settings.notifications.followUpDays,
+      theme: this.settings.display.theme,
+      itemsPerPage: this.settings.display.itemsPerPage
+    });
   }
 }

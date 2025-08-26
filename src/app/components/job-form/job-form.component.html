@@ -1,9 +1,11 @@
 <div class="job-form-container">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>{{ isEditMode ? 'Edit Job Application' : 'Add New Job Application' }}</mat-card-title>
+      <mat-card-title>{{
+        isEditMode ? "Edit Job Application" : "Add New Job Application"
+      }}</mat-card-title>
     </mat-card-header>
-    
+
     <mat-card-content>
       <form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
         <div class="form-row">
@@ -12,33 +14,46 @@
             placeholder="e.g. Software Engineer"
             formControlName="position"
             [required]="true"
-            [hasError]="!!(jobForm.get('position')?.invalid && jobForm.get('position')?.touched)"
+            [hasError]="
+              !!(
+                jobForm.get('position')?.invalid &&
+                jobForm.get('position')?.touched
+              )
+            "
             errorMessage="Job title is required"
-            class="full-width">
+            class="full-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <app-simple-input
             label="Company"
             placeholder="e.g. Google"
             formControlName="company"
             [required]="true"
-            [hasError]="!!(jobForm.get('company')?.invalid && jobForm.get('company')?.touched)"
+            [hasError]="
+              !!(
+                jobForm.get('company')?.invalid &&
+                jobForm.get('company')?.touched
+              )
+            "
             errorMessage="Company is required"
-            class="full-width">
+            class="full-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <app-simple-input
             label="Location"
             placeholder="e.g. San Francisco, CA"
             formControlName="location"
-            class="full-width">
+            class="full-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <app-simple-input
             label="Application Status"
@@ -46,142 +61,224 @@
             type="select"
             formControlName="status"
             [options]="[
-              {value: 'Applied', label: 'Applied'},
-              {value: 'Interview', label: 'Interview'},
-              {value: 'Offer', label: 'Offer'},
-              {value: 'Rejected', label: 'Rejected'}
+              { value: 'Applied', label: 'Applied' },
+              { value: 'Interview', label: 'Interview' },
+              { value: 'Offer', label: 'Offer' },
+              { value: 'Rejected', label: 'Rejected' }
             ]"
-            class="half-width">
+            class="half-width"
+          >
           </app-simple-input>
-          
+
           <app-simple-input
             label="Date Applied"
             type="date"
             formControlName="dateApplied"
-            class="half-width">
+            class="half-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <app-simple-input
             label="Job URL"
             placeholder="https://..."
             type="url"
             formControlName="url"
-            class="full-width">
+            class="full-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <app-simple-input
             label="Salary Range"
             placeholder="e.g. $80k - $120k"
             formControlName="salaryRange"
-            class="half-width">
+            class="half-width"
+          >
           </app-simple-input>
-          
+
           <app-simple-input
             label="Job Type"
             placeholder="Select job type"
             type="select"
             formControlName="jobType"
             [options]="[
-              {value: 'Full-time', label: 'Full-time'},
-              {value: 'Part-time', label: 'Part-time'},
-              {value: 'Contract', label: 'Contract'},
-              {value: 'Internship', label: 'Internship'}
+              { value: 'Full-time', label: 'Full-time' },
+              { value: 'Part-time', label: 'Part-time' },
+              { value: 'Contract', label: 'Contract' },
+              { value: 'Internship', label: 'Internship' }
             ]"
-            class="half-width">
+            class="half-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <app-simple-input
             label="Notes"
             placeholder="Additional notes about this job application..."
             type="textarea"
             formControlName="notes"
-            class="full-width">
+            class="full-width"
+          >
           </app-simple-input>
         </div>
-        
+
         <div class="form-row">
           <div class="file-upload-section">
             <h3>Documents</h3>
-            
+
             <div class="file-upload-field">
               <label for="resume-upload" class="file-upload-label">
                 <mat-icon>description</mat-icon>
                 Resume (PDF, DOC, DOCX)
               </label>
-              
+
               <!-- Show existing resume if available -->
-              <div *ngIf="existingResume && !selectedResume" class="existing-file-info">
+              <div
+                *ngIf="existingResume && !selectedResume"
+                class="existing-file-info"
+              >
                 <mat-icon>attach_file</mat-icon>
-                <span>{{ existingResume.name }} ({{ formatFileSize(existingResume.size) }})</span>
-                <button mat-icon-button type="button" (click)="downloadExistingFile(existingResume, 'resume')" color="primary" title="Download">
+                <span
+                  >{{ existingResume.name }} ({{
+                    formatFileSize(existingResume.size)
+                  }})</span
+                >
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="downloadExistingFile(existingResume, 'resume')"
+                  color="primary"
+                  title="Download"
+                >
                   <mat-icon>download</mat-icon>
                 </button>
-                <button mat-icon-button type="button" (click)="removeExistingResume()" color="warn" title="Remove">
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeExistingResume()"
+                  color="warn"
+                  title="Remove"
+                >
                   <mat-icon>close</mat-icon>
                 </button>
               </div>
-              
-              <input 
-                id="resume-upload" 
-                type="file" 
-                accept=".pdf,.doc,.docx" 
+
+              <input
+                id="resume-upload"
+                type="file"
+                accept=".pdf,.doc,.docx"
                 (change)="onResumeSelected($event)"
                 #resumeInput
                 class="file-input"
+              />
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="resumeInput.click()"
+                class="upload-button"
               >
-              <button mat-stroked-button type="button" (click)="resumeInput.click()" class="upload-button">
                 <mat-icon>upload_file</mat-icon>
-                {{ existingResume && !selectedResume ? 'Replace Resume' : 'Choose Resume' }}
+                {{
+                  existingResume && !selectedResume
+                    ? "Replace Resume"
+                    : "Choose Resume"
+                }}
               </button>
               <div *ngIf="selectedResume" class="file-info">
                 <mat-icon>check_circle</mat-icon>
-                <span>{{ selectedResume.name }} ({{ formatFileSize(selectedResume.size) }})</span>
-                <button mat-icon-button type="button" (click)="removeResume()" color="warn">
+                <span
+                  >{{ selectedResume.name }} ({{
+                    formatFileSize(selectedResume.size)
+                  }})</span
+                >
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeResume()"
+                  color="warn"
+                >
                   <mat-icon>close</mat-icon>
                 </button>
               </div>
             </div>
-            
+
             <div class="file-upload-field">
               <label for="cover-letter-upload" class="file-upload-label">
                 <mat-icon>article</mat-icon>
                 Cover Letter (PDF, DOC, DOCX)
               </label>
-              
+
               <!-- Show existing cover letter if available -->
-              <div *ngIf="existingCoverLetter && !selectedCoverLetter" class="existing-file-info">
+              <div
+                *ngIf="existingCoverLetter && !selectedCoverLetter"
+                class="existing-file-info"
+              >
                 <mat-icon>attach_file</mat-icon>
-                <span>{{ existingCoverLetter.name }} ({{ formatFileSize(existingCoverLetter.size) }})</span>
-                <button mat-icon-button type="button" (click)="downloadExistingFile(existingCoverLetter, 'coverLetter')" color="primary" title="Download">
+                <span
+                  >{{ existingCoverLetter.name }} ({{
+                    formatFileSize(existingCoverLetter.size)
+                  }})</span
+                >
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="
+                    downloadExistingFile(existingCoverLetter, 'coverLetter')
+                  "
+                  color="primary"
+                  title="Download"
+                >
                   <mat-icon>download</mat-icon>
                 </button>
-                <button mat-icon-button type="button" (click)="removeExistingCoverLetter()" color="warn" title="Remove">
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeExistingCoverLetter()"
+                  color="warn"
+                  title="Remove"
+                >
                   <mat-icon>close</mat-icon>
                 </button>
               </div>
-              
-              <input 
-                id="cover-letter-upload" 
-                type="file" 
-                accept=".pdf,.doc,.docx" 
+
+              <input
+                id="cover-letter-upload"
+                type="file"
+                accept=".pdf,.doc,.docx"
                 (change)="onCoverLetterSelected($event)"
                 #coverLetterInput
                 class="file-input"
+              />
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="coverLetterInput.click()"
+                class="upload-button"
               >
-              <button mat-stroked-button type="button" (click)="coverLetterInput.click()" class="upload-button">
                 <mat-icon>upload_file</mat-icon>
-                {{ existingCoverLetter && !selectedCoverLetter ? 'Replace Cover Letter' : 'Choose Cover Letter' }}
+                {{
+                  existingCoverLetter && !selectedCoverLetter
+                    ? "Replace Cover Letter"
+                    : "Choose Cover Letter"
+                }}
               </button>
               <div *ngIf="selectedCoverLetter" class="file-info">
                 <mat-icon>check_circle</mat-icon>
-                <span>{{ selectedCoverLetter.name }} ({{ formatFileSize(selectedCoverLetter.size) }})</span>
-                <button mat-icon-button type="button" (click)="removeCoverLetter()" color="warn">
+                <span
+                  >{{ selectedCoverLetter.name }} ({{
+                    formatFileSize(selectedCoverLetter.size)
+                  }})</span
+                >
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeCoverLetter()"
+                  color="warn"
+                >
                   <mat-icon>close</mat-icon>
                 </button>
               </div>
@@ -190,15 +287,26 @@
         </div>
       </form>
     </mat-card-content>
-    
+
     <mat-card-actions>
-      <button mat-button type="button" (click)="onCancel()">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="onCancel()"
+        class="upload-button"
+      >
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="jobForm.invalid">
+      <button
+        mat-raised-button
+        class="upload-button"
+        type="submit"
+        (click)="onSubmit()"
+        [disabled]="jobForm.invalid"
+      >
         <mat-icon>save</mat-icon>
-        {{ isEditMode ? 'Update' : 'Save' }}
+        {{ isEditMode ? "Update" : "Save" }}
       </button>
     </mat-card-actions>
   </mat-card>
